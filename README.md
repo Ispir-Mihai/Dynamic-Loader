@@ -18,6 +18,73 @@ The loader operates by parsing the **PEB** of the current process to retrieve in
 3. **Function Search**: The loader searches for the specified function name in the export directory.
 4. **Function Call**: Once the function is found, the loader retrieves the address and calls the function with the provided arguments.
 
-### TODO
-- Add usage docs in README.md
-- Add exemples in README.md
+### Usage
+
+## **Loading a Module**
+- **Constructor**: `DynamicLoader(const std::string& moduleName)`
+  - **Purpose**: Loads the specified module.
+  - **Parameters**: 
+    - `moduleName`: The name of the module to load.
+
+## **Calling a Function**
+- **Method**: `template<typename T, typename ...Args> decltype(auto) CallFunction(const char* funcName, Args&& ...args)`
+  - **Purpose**: Calls a function from the loaded module by its name.
+  - **Parameters**: 
+    - `funcName`: The name of the function to call.
+    - `args`: The arguments to pass to the function.
+  - **Return**: Returns the result of the function call, with the return type specified by `T`.
+
+### Examples
+```cpp
+#include "DynamicLoader.h"
+
+int main()
+{
+    DynamicLoader kernel32("kernel32.dll");
+
+    // If other dlls are required and not found in the PEB they can be loaded like so:
+    kernel32.CallFunction<HMODULE>("LoadLibraryA", "user32.dll");
+
+	  DynamicLoader user32("user32.dll");
+	  user32.CallFunction<int>("MessageBoxA", nullptr, "Hello World", "Hello", MB_OK);
+
+    return 0;
+}
+```
+Or inherit the `DynamicLoader` for a specific module for more organized and controlled code (still not sure about this)
+```cpp
+#include "DynamicLoader.h"
+#include <iostream>
+
+struct Kernel32 : public DynamicLoader
+{
+	Kernel32() : DynamicLoader("kernel32.dll") {}
+
+	HMODULE LoadLibraryA(LPCSTR lpLibFileName)
+	{
+		return CallFunction<HMODULE>("LoadLibraryA", *lpLibFileName);
+	}
+};
+
+struct User32 : public DynamicLoader
+{
+	User32() : DynamicLoader("user32.dll") {}
+
+	int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT* uType)
+	{
+		return CallFunction<int>("MessageBoxA", *hWnd, *lpText, *lpCaption, *uType);
+	}
+};
+
+int main()
+{
+	Kernel32 kernel32;
+	kernel32.LoadLibraryA("user32.dll");
+
+	User32 user32;
+	user32.MessageBoxA(nullptr, "Hello, World!", "Hello", MB_OK);
+
+    return 0;
+}
+```
+
