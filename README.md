@@ -45,8 +45,8 @@ int main()
     // If other dlls are required and not found in the PEB they can be loaded like so:
     kernel32.CallFunction<HMODULE>("LoadLibraryA", "user32.dll");
 
-	  DynamicLoader user32("user32.dll");
-	  user32.CallFunction<int>("MessageBoxA", nullptr, "Hello World", "Hello", MB_OK);
+    DynamicLoader user32("user32.dll");
+    user32.CallFunction<int>("MessageBoxA", nullptr, "Hello World", "Hello", MB_OK);
 
     return 0;
 }
@@ -58,31 +58,31 @@ Or inherit the `DynamicLoader` for a specific module for more organized and cont
 
 struct Kernel32 : public DynamicLoader
 {
-	Kernel32() : DynamicLoader("kernel32.dll") {}
+    Kernel32() : DynamicLoader("kernel32.dll") {}
 
-	HMODULE LoadLibraryA(LPCSTR lpLibFileName)
-	{
-		return CallFunction<HMODULE>("LoadLibraryA", *lpLibFileName);
-	}
+    HMODULE LoadLibraryA(LPCSTR lpLibFileName)
+    {
+    	return CallFunction<HMODULE>("LoadLibraryA", *lpLibFileName);
+    }
 };
 
 struct User32 : public DynamicLoader
 {
-	User32() : DynamicLoader("user32.dll") {}
+    User32() : DynamicLoader("user32.dll") {}
 
-	int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT* uType)
-	{
-		return CallFunction<int>("MessageBoxA", *hWnd, *lpText, *lpCaption, *uType);
-	}
+    int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT* uType)
+    {
+    	return CallFunction<int>("MessageBoxA", *hWnd, *lpText, *lpCaption, *uType);
+    }
 };
 
 int main()
 {
-	Kernel32 kernel32;
-	kernel32.LoadLibraryA("user32.dll");
+    Kernel32 kernel32;
+    kernel32.LoadLibraryA("user32.dll");
 
-	User32 user32;
-	user32.MessageBoxA(nullptr, "Hello, World!", "Hello", MB_OK);
+    User32 user32;
+    user32.MessageBoxA(nullptr, "Hello, World!", "Hello", MB_OK);
 
     return 0;
 }
