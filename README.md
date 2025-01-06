@@ -1,12 +1,12 @@
 # Dynamic Loader
 
-A lightweight dynamic loader that searches through the Process Environment Block (PEB) to locate and load functions from loaded modules without relying on WinAPI calls. This loader is designed to be less detectable by antivirus programs and cheat detection systems.
+A lightweight dynamic loader that searches through the Process Environment Block (PEB) to locate and load functions from loaded modules without relying on WinAPI calls. This loader is designed to be less detectable by antivirus programs.
 
 ## Features
 
-- **PEB-based Function Loading**: Instead of using standard WinAPI functions like `GetProcAddress`, this loader directly interacts with the PEB to find and load functions.
-- **No WinAPI Calls**: The loader avoids common API calls that are often monitored by antivirus and anti-cheat software, reducing the likelihood of detection.
-- **Cross-Platform**: This loader can be used in environments where WinAPI is not available, as long as the PEB structure is accessible.
+- **PEB-based Function Loading**: Instead of using standard WinAPI functions like `GetModuleHandle` and `GetProcAddress`, this loader directly interacts with the PEB to find and load functions.
+- **No WinAPI Calls**: The loader avoids common API calls that are often monitored by antivirus, reducing the likelihood of detection.
+- **Cross-Architecture**: Works on both 32-bit (x86) and 64-bit (x64) Windows systems.
 
 ## How It Works
 
